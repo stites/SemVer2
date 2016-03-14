@@ -1,11 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Parsers.SemVer2 where
 
 import Control.Applicative
 import Text.Trifecta
 
-data SemVer = SemVer Major Minor Patch Release Metadata
+data SemVer =
+  SemVer Major Minor Patch Release Metadata
+  deriving (Eq, Show)
 
 type Major = Integer
 type Minor = Integer
