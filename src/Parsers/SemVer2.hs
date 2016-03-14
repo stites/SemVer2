@@ -21,11 +21,20 @@ data NumberOrString =
 parseSemVer :: Parser SemVer
 parseSemVer = do
   major <- decimal
+  _     <- char '.'
   minor <- decimal
-  patch  <- decimal
-  release'  <- some parseNumberOrString
-  metadata <- some parseNumberOrString
+  _     <- char '.'
+  patch <- decimal
+  release' <- parseSemVerOptionals
+  metadata <- parseSemVerOptionals
   return $ SemVer major minor patch release' metadata
+
+parseSemVerOptionals :: Parser [NumberOrString]
+parseSemVerOptionals = do
+  opt <- optional (char '-' >> some parseNumberOrString)
+  case opt of
+    Just nos' -> return nos'
+    Nothing   -> return []
 
 parseNumberOrString :: Parser NumberOrString
 parseNumberOrString = do
