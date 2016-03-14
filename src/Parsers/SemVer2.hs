@@ -1,4 +1,4 @@
-module Lib
+module Parsers.SemVer2
     ( someFunc
     ) where
 

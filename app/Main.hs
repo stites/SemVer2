@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import Parsers.SemVer2
 
 main :: IO ()
 main = someFunc
