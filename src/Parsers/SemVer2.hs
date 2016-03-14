@@ -32,15 +32,17 @@ parseSemVer = do
 
 parseSemVerOptionals :: Parser [NumberOrString]
 parseSemVerOptionals = do
-  opt <- optional (char '-' >> some parseNumberOrString)
+  opt <- optional (char '-' >> parseNumberOrString `sepBy` (symbol "."))
   case opt of
-    Just nos' -> return nos'
+    Just nos' -> return nos'-- nos'
     Nothing   -> return []
+
+parseExplicitInteger :: Parser Integer
+parseExplicitInteger = integer <* notFollowedBy letter
 
 parseNumberOrString :: Parser NumberOrString
 parseNumberOrString = do
-  skipMany whiteSpace
-  either' <- (Left <$> integer) <|> (Right <$> some letter)
+  either' <- try (Left <$> parseExplicitInteger) <|> (Right <$> some alphaNum)
   case either' of
     Left i  -> return (NOSI i)
     Right s -> return (NOSS s)
