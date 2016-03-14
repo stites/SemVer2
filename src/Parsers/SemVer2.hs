@@ -20,6 +20,7 @@ data NumberOrString =
 
 parseSemVer :: Parser SemVer
 parseSemVer = do
+  _     <- skipOptional whiteSpace
   major <- decimal
   _     <- char '.'
   minor <- decimal
