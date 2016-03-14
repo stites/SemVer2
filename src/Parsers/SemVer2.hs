@@ -26,23 +26,26 @@ parseSemVer = do
   minor <- decimal
   _     <- char '.'
   patch <- decimal
-  release' <- parseSemVerOptionals
-  metadata <- parseSemVerOptionals
+  release' <- parseSemVerOptionals '-'
+  metadata <- parseSemVerOptionals '+'
   return $ SemVer major minor patch release' metadata
 
-parseSemVerOptionals :: Parser [NumberOrString]
-parseSemVerOptionals = do
-  opt <- optional (char '-' >> parseNumberOrString `sepBy` (symbol "."))
+parseSemVerOptionals :: Char -> Parser [NumberOrString]
+parseSemVerOptionals sep = do
+  opt <- optional (char sep >> parseNumberOrString `sepBy` (symbol "."))
   case opt of
     Just nos' -> return nos'-- nos'
     Nothing   -> return []
 
-parseExplicitInteger :: Parser Integer
-parseExplicitInteger = integer <* notFollowedBy letter
+validInteger :: Parser Integer
+validInteger = natural <* notFollowedBy validChar
+
+validChar :: Parser Char
+validChar = alphaNum <|> char '-'
 
 parseNumberOrString :: Parser NumberOrString
 parseNumberOrString = do
-  either' <- try (Left <$> parseExplicitInteger) <|> (Right <$> some alphaNum)
+  either' <- try (Left <$> validInteger) <|> (Right <$> some validChar)
   case either' of
     Left i  -> return (NOSI i)
     Right s -> return (NOSS s)
